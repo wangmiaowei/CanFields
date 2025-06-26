@@ -1,0 +1,105 @@
+{
+  "Description" : "CanFields: Consolidating 4D Dynamic Shapes from Raw Scans",
+  "DataSource" : "../",
+  "ShapePath": "datasets/Deforming4D/notexture/",
+  "NetworkArch" : "velocity_debug",
+  "NetworkSpecs" : {
+    "warper_kargs": {
+      "hidden_size": 512,
+      "steps": 4,
+      "time": 1.0
+    },
+    "decoder_kargs": {
+      "dims": [256, 256, 256, 256, 256],
+      "dropout": [0, 1, 2, 3, 4],
+      "dropout_prob": 0.05,
+      "norm_layers": [0, 1, 2, 3, 4],
+      "xyz_in_all": false,
+      "weight_norm": true
+    },
+    "decoder_debug_kargs":{
+      "dims" : [ 512, 512, 512, 512, 512, 512, 512, 512 ],
+      "dropout" : [0, 1, 2, 3, 4, 5, 6, 7],
+      "dropout_prob" : 0.15,
+      "norm_layers" : [0, 1, 2, 3, 4, 5, 6, 7],
+      "latent_in" : [4],
+      "xyz_in_all" : false,
+      "use_tanh" : false,
+      "latent_dropout" : false,
+      "weight_norm" : true
+      }
+    },
+  "CodeLength" : 128,
+  "NumEpochs" : 15001,
+  "SnapshotFrequency" : 1000,
+  "AdditionalSnapshots" : [ 100, 500 ],
+  "LearningRateSchedule" : [
+    { "_comment":"part segmentation",
+      "Type" : "Step", 
+      "Initial" : 0.0005, 
+      "Interval" : 500,
+      "Factor" : 0.5
+    },
+    {
+      "_comment":"ode learning rate",
+      "Type" : "Step",
+      "Initial" : 0.0003,
+      "Interval" : 300,
+      "Factor" : 0.5
+    },
+    {
+      "_comment":"SDF decoder_3e-6",
+      "Type" : "Step",
+      "Initial" : 3e-6,
+      "Interval" : 300,
+      "Factor" : 0.5,
+      "raw_init":3e-6
+    },
+    {
+      "_comment":"ODE latent code",
+      "Type" : "Step",
+      "Initial" : 0.001,
+      "Interval" : 500,
+      "Factor" : 0.5
+    },
+    {
+      "_comment":"Adaptor params",
+      "Type" : "Step",
+      "Initial" : 0.001,
+      "Interval" : 500,
+      "Factor" : 0.5
+    },
+    {
+      "_comment":"Adaptor latent codes",
+      "Type" : "Step",
+      "Initial" : 0.01,
+      "Interval" : 500,
+      "Factor" : 0.5
+    }],
+  "SamplesPerScene" : 5000,
+  "ScenesPerBatch" : 8,
+  "DataLoaderThreads" : 0,
+  "ClampingDistance" : 0.1,
+  "CodeRegularization" : true,
+  "CodeRegularizationLambda" : 1e-4,
+  "CodeBound" : 1.0,
+  "UsePointwiseLoss": true,
+  "PointwiseLossWeight": 0.005,
+  "UsePointpairLoss": false,
+  "PointpairLossWeight": 0.0001,
+  "UseCurriculum": true,
+  "loss": [
+    {
+      "loss_type": "ReconLoss",
+      "properties":{
+              "recon_loss_weight": 1.0,
+              "grad_loss_weight" : 0.1,
+              "z_weight": 0.0,
+              "grad_on_surface_weight": 0.1,
+              "latent_reg_weight":0.001
+          }
+  },
+  {
+    
+  }]
+}
